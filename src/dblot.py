@@ -2,19 +2,16 @@ from db.connection import *
 import time
 
 class _DBlot: 
-    def __init__(self, func, db="", setup=[]):
+    def __init__(self, func, db="", execute=""):
         self.connection = connect(db)
         self.cursor = self.connection.cursor()
         self.function = func
-        for command in setup:
-            self.cursor.execute(command)
+        self.execute = execute
   
     def __call__(self, *args, **kwargs):
         t1 = time.time()
 
-        self.cursor.execute("""
-            SELECT * FROM t;
-        """)
+        self.cursor.execute(self.execute)
         for row in self.cursor.fetchall():
             self.function(row)
 
@@ -24,23 +21,10 @@ class _DBlot:
         self.connection.close()
 
 # wrap _Cache to allow for deferred calling
-def DBlot(function=None, db="", setup=[]):
+def DBlot(function=None, db="", execute=""):
     if function:
         return _DBlot(function)
     else:
         def wrapper(function):
-            return _DBlot(function, db, setup)
-
+            return _DBlot(function, db, execute)
         return wrapper
-
-
-@DBlot(db="test.db", setup=[
-    "CREATE TABLE IF NOT EXISTS t (id INT);",
-    "INSERT INTO t (id) VALUES (1);",
-    "INSERT INTO t (id) VALUES (2);",
-    ])
-def test(row=""): 
-    if row[0] == 2:
-        print("found id 2!")
-
-test()
