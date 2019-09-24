@@ -1,9 +1,9 @@
 import dblot
 
-@dblot.DBlot(db="test.db", execute="SELECT * FROM t;")
-def test(row=""): 
-    if row[0] == 2:
+@dblot.DBlot(db="test.db")
+def test(*args, **kwargs): 
+    if kwargs['row'] == 2:
         print("found id 2!")
 
 if __name__ == "__main__":
-    test()
+    test(execute="SELECT * FROM t;")
