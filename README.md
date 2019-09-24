@@ -1,7 +1,15 @@
 # dblot
 A lightweight database analysis library for Python3
 
-## This repo comes with an example file called test.py
-This file contains a script to count the ammount of rows in a table with the id of 2
+'''
+import dblot
 
-## More descriptions coming soon!
+@dblot.analyser(db="test.db")
+def test(*args, **kwargs): 
+    if kwargs['row'][0] == 2:
+        return 1
+    return 0
+
+if __name__ == "__main__":
+    print("{} rows with id of 2".format(sum(test(execute="SELECT * FROM t;"))))
+'''
