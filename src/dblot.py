@@ -1,4 +1,4 @@
-from db.connection import *
+from connection import *
 import time
 
 class _DBlot: 
@@ -9,15 +9,14 @@ class _DBlot:
   
     def __call__(self, *args, **kwargs):
         t1 = time.time()
-
+        print("starting analysis of '{}'...".format(kwargs['execute']))
         self.cursor.execute(kwargs['execute'])
+        results = []
         for row in self.cursor.fetchall():
-            self.function(row=row)
-
-        #result = self.function(*args, **kwargs) 
-        print("function took {}".format(time.time()-t1))
-        return True
+            results.append(self.function(*args, **kwargs, row=row))
+        print("finished analysis of '{}', took {} seconds".format(kwargs['execute'], time.time()-t1))
         self.connection.close()
+        return results
 
 # wrap _Cache to allow for deferred calling
 def DBlot(function=None, db=""):
